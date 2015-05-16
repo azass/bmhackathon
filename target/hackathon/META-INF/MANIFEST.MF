@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Implementation-Title: Spring Boot Docker Blank Project (from https://g
+ ithub.com/making/spring-boot-docker-blank)
+Implementation-Version: 1.0.0-SNAPSHOT
+Archiver-Version: Plexus Archiver
+Built-By: zag61728gmailcom
+Start-Class: bluemixhack.App
+Implementation-Vendor-Id: bluemixhack
+Spring-Boot-Version: 1.2.1.RELEASE
+Created-By: Apache Maven 3.2.1
+Build-Jdk: 1.8.0_20
+Implementation-Vendor: Pivotal Software, Inc.
+Main-Class: org.springframework.boot.loader.JarLauncher
+

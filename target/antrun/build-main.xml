@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <zip basedir="/Users/zag61728gmailcom/Documents/workspace/hackathon/target" destfile="/Users/zag61728gmailcom/Documents/workspace/hackathon/target/app.zip" includes="Dockerfile, Dockerrun.aws.json, hackathon.jar"/>
+</target>
+</project>
