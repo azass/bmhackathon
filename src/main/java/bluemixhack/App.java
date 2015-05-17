@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Base64;
+import org.apache.commons.codec.binary.Base64;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -85,8 +85,12 @@ public class App {
 	@MessageMapping(value = "/cameraRecorder")
 	void cameraRecorder(String base64Image) {
 		if (isRecording) {
+			byte[] inTestStrByte = base64Image.getBytes();  
+		      
+		    // 文字列をBase64にエンコード  
+//		    byte[] outTestStrBtye = Base64.encodeBase64(inTestStrByte);
 			Message<byte[]> message = MessageBuilder.withPayload(
-					Base64.getDecoder().decode(base64Image)).build();
+					Base64.decodeBase64(inTestStrByte)).build();
 
 			try (InputStream stream = new ByteArrayInputStream(
 					message.getPayload())) {
