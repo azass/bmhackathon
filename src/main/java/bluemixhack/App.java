@@ -1,5 +1,22 @@
 package bluemixhack;
 
+import static org.bytedeco.javacpp.avcodec.AV_CODEC_ID_NONE;
+import static org.bytedeco.javacpp.avutil.AV_PIX_FMT_YUV420P;
+
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
 import org.bytedeco.javacpp.opencv_core.IplImage;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.FrameRecorder.Exception;
@@ -14,23 +31,13 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.socket.config.annotation.AbstractWebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
-
-import javax.imageio.ImageIO;
-
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-
-import static org.bytedeco.javacpp.avcodec.AV_CODEC_ID_NONE;
-import static org.bytedeco.javacpp.avutil.AV_PIX_FMT_YUV420P;
 
 @SpringBootApplication
 @RestController
@@ -81,17 +88,19 @@ public class App {
 			Message<byte[]> message = MessageBuilder.withPayload(
 					Base64.getDecoder().decode(base64Image)).build();
 
-			try (InputStream stream = new ByteArrayInputStream(message.getPayload())) {
+			try (InputStream stream = new ByteArrayInputStream(
+					message.getPayload())) {
 				BufferedImage image = ImageIO.read(stream);
 				list.add(image);
 				stream.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			if (list.size() == 60) {
 				isRecording = false;
-				FFmpegFrameRecorder recorder = new FFmpegFrameRecorder("/tmp/livemovie.mp4", 400, 300);
+				FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(
+						"/tmp/livemovie.mp4", 400, 300);
 				recorder.setVideoCodec(AV_CODEC_ID_NONE);
 				recorder.setFrameRate(10);
 				recorder.setPixelFormat(AV_PIX_FMT_YUV420P);
@@ -101,7 +110,7 @@ public class App {
 						recorder.record(IplImage.createFrom(image));
 					}
 				} catch (Exception e) {
-					e.printStackTrace();			
+					e.printStackTrace();
 				} finally {
 					try {
 						recorder.stop();
@@ -114,10 +123,24 @@ public class App {
 			}
 		}
 	}
-	
+
 	@RequestMapping(value = "/shoot")
 	public String shoot() {
 		isRecording = true;
 		return "OK";
+	}
+
+	@RequestMapping(value = "/download")
+	public String doDownload(HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		File file = new File("/tmp/livemovie.mp4");
+		byte[] byteArray = FileUtils.readFileToByteArray(file);
+		response.setContentType("application/octet-stream");
+		response.setContentLength(byteArray.length);
+		response.setHeader("Content-disposition", "attachment; filename=\""
+				+ file.getName() + "\"");
+		FileCopyUtils.copy(byteArray, response.getOutputStream());
+
+		return "";
 	}
 }

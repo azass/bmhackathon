@@ -56,16 +56,12 @@
             <classifier>${classifier}</classifier>
 	    </dependency>
 
-        <!-- SpringのJMSサポートとHornetQのクライアントライブラリを追加 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-hornetq</artifactId>
-        </dependency>
-        <!-- 組み込みインメモリHornetQ -->
-        <dependency>
-            <groupId>org.hornetq</groupId>
-            <artifactId>hornetq-jms-server</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		
         <!-- WebSocketプログラミングに必要な諸々 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
